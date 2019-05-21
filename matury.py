@@ -11,14 +11,19 @@ class Graduate:
     def averageAttendedInYears(self, data, year, region):
         """
         Function calculate average number of students that attended exam in given voivodeship in years from lowest year to given year
+        
+        Parameters
         ----------
-        Parameters:
         data : Graduate
-            Object of type Graduate which contains a list for each parameter of data base
+            Object of the type Graduate which contains a list for each parameter of database
         year : int
             Year up to which to calculate the average
         region : string
             Voivodeship in which user wants to calculate the average
+        Returns
+        ----------
+        int
+            Average number of stutents that attended exam in given voivodeship in years from lowest year to given year
         """
         average = 0
         for i in range(len(data.year)):
@@ -32,12 +37,12 @@ class Graduate:
         """
         Function reads data from .csv file and copies it into object of type Graduate
 
-        Parameters:
+        Parameters
         ----------
         filename : string
-            Name of the file to be read witch filetype .csv
+            Name of the file to be read which filetype .csv
         new_data : Graduate
-            Object of type Graduate which contains a list for each parameter of data base
+            Object of type Graduate which contains a list for each parameter of database
 
         """
         with open(filename) as csv_data:
