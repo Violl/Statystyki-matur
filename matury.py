@@ -36,6 +36,7 @@ class Graduate:
         return average/(1+year-int(min(data.year)))         
 
 
+
     def passRateInRegion(self, data, region, sex ='all'):
         """
         Function calculates and returns dictionary with years and pass rate in corresponding year in percents.
