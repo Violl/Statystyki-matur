@@ -35,31 +35,47 @@ class Graduate:
                         average += int(data.number[i])
         return average/(1+year-int(min(data.year)))         
 
-
-
+    def passRate(self,data,year,region,sex = 'all'):
+        """
+        Function calculates pass rate in given year and region.
+        """
+        passed = 0
+        temp_attending = 0
+        for i in range(len(data.year)):
+            if str(region) in data.region[i] and str(year) in data.year[i] and (sex in data.sex[i] or sex == 'all'):
+                if 'przystąpiło' in data.attended_or_passed[i]:
+                    temp_attending = temp_attending + int(data.number[i])
+                elif 'zdało' in data.attended_or_passed[i]:
+                    passed = passed + int(data.number[i])/int(temp_attending)*100
+                            
+        return passed
+        
     def passRateInRegion(self, data, region, sex ='all'):
         """
-        Function calculates and returns dictionary with years and pass rate in corresponding year in percents.
+        Function calculates and returns dictionary with years and pass rate in corresponding year in percents for given region.
         If parameter sex is not given, function runs for all.
         """
         passed_in_years = {}
-        temp_attending = 0
         years = set(data.year[1:])
         year= int(min(years))
-        temp_i = 0
-        i=0
-        while i < len(data.region):
-            if region in data.region[i] and (sex in data.sex[i] or sex == 'all'):
-                if str(year) in data.year[i]:
-                    if 'przystąpiło' in data.attended_or_passed[i]:
-                        temp_attending = data.number[i]
-                        temp_i = i
-                    elif 'zdało' in data.attended_or_passed[i]:
-                        passed_in_years[data.year[i]] = int(data.number[i])/int(temp_attending)*100
-                        year += 1
-                        i -= i-temp_i
-            i+=1
+
+        while year <= int(max(years)):
+            passed_in_years[year] = data.passRate(data,year,region,sex)
+            year += 1
+
         return passed_in_years
+
+
+    def passRateInYears(self, data, year, sex ='all'):
+        """
+        Function calculates and returns dictionary with regions and pass rate in corresponding regions in percents for given year.
+        If parameter sex is not given, function runs for all.
+        """
+        passed_in_region = {}
+        regions = data.listOfRegions(data)
+        for region in regions:
+            passed_in_region[region] = data.passRate(data,year,region,sex)
+        return passed_in_region
 
     def listOfRegions(self, data):
         regions = set(data.region)
@@ -83,7 +99,6 @@ class Graduate:
                 best_region = region
 
         max_passed = max((d[year]) for d in regions_with_rates.values())
-        #max_passed = max(regions_with_rates, key = lambda x :regions_with_rates[])
         return best_region , max_passed
             
 
@@ -94,16 +109,17 @@ class Graduate:
     def compareRegions(self, data, region_1, region_2):
         #porównanie dwóch województw - dla podanych dwóch województw wypisanie, które z województw miało lepszą zdawalność w każdym dostępnym roku
         pass
-            
+
 data = Graduate('','','','','')
 data.readData('baza_maturzystow.csv',data)
 year = 2012
 voivodeship = 'Pomorskie'
 sex = 'kobiety'
-years = data.passRateInRegion(data,voivodeship,sex)
+years = data.passRateInYears(data,'2012',sex)
 #print(f'Średnia uczestnicząych w maturze w latach {min(data.year)}-{year} dla województwa'
 #f'Pomorskiego wyniosła : {data.averageAttendedInYears(data,year,voivodeship,sex): .1f}')
-#print(f'Zdawalność w pomorskim w latach równa się {years} ')
-ms= 0 
-ms = data.bestPassRate(data,'2011',sex)
-print(ms)
+print(f'Zdawalność w 2012 w województwach równa się {years} ')
+#ms= 0 
+#ms = data.bestPassRate(data,'2011',sex)
+#print(ms)
+print(f'Pomorskie {data.passRate(data,"2010","Pomorskie")}')
