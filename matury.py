@@ -66,7 +66,7 @@ class Graduate:
         return passed_in_years
 
 
-    def passRateInYears(self, data, year, sex ='all'):
+    def passRateInYear(self, data, year, sex ='all'):
         """
         Function calculates and returns dictionary with regions and pass rate in corresponding regions in percents for given year.
         If parameter sex is not given, function runs for all.
@@ -78,6 +78,9 @@ class Graduate:
         return passed_in_region
 
     def listOfRegions(self, data):
+        """
+        Makes a list of regions that apeared in database.
+        """
         regions = set(data.region)
         regions.remove("Terytorium")
         regions.remove("Polska")
@@ -85,6 +88,9 @@ class Graduate:
         return regions
 
     def bestPassRate(self,data,year,sex = 'all'):
+        """
+        Returns region in which pass rate was highest in given year.
+        """
         regions = data.listOfRegions(data)
         regions_with_rates = {}
         max_passed = 0
@@ -102,24 +108,54 @@ class Graduate:
         return best_region , max_passed
             
 
-    def regionPassRegression(self, parameter_list):
-        ## wykrycie województw, które zanotowały regresję (mniejszy współczynnik zdawalności w kolejnym roku), jeżeli takowe znajdują się w zbiorze
-        pass
+    def passRegression(self, data, region, year, sex = 'all'):
+        """
+        Compare regression in one region in certain year.
+        """
+        if int(year) >= int(min(data.year)):
+            return (data.passRate(data,str(year),str(region)) > data.passRate(data,str(int(year)+1),str(region)))
+        else:
+            return (False)
     
-    def compareRegions(self, data, region_1, region_2):
-        #porównanie dwóch województw - dla podanych dwóch województw wypisanie, które z województw miało lepszą zdawalność w każdym dostępnym roku
-        pass
+    def regionRegression(self, data, region, sex = 'all'):
+        """
+        Shows in what years in given region regression appeared.
+        """
+        year = int(min(years))
+        print(f'W województwie {region}m wystąpiła regresja w latach: ')
+        while year <= int(max(years)):
+            if data.passRegression(data,region,year,sex):
+                print(f'{year} -> {(int(year)+1)}')
+                year += 1
+            else:
+                year += 1
 
-data = Graduate('','','','','')
-data.readData('baza_maturzystow.csv',data)
-year = 2012
-voivodeship = 'Pomorskie'
-sex = 'kobiety'
-years = data.passRateInYears(data,'2012',sex)
-#print(f'Średnia uczestnicząych w maturze w latach {min(data.year)}-{year} dla województwa'
-#f'Pomorskiego wyniosła : {data.averageAttendedInYears(data,year,voivodeship,sex): .1f}')
-print(f'Zdawalność w 2012 w województwach równa się {years} ')
-#ms= 0 
-#ms = data.bestPassRate(data,'2011',sex)
-#print(ms)
-print(f'Pomorskie {data.passRate(data,"2010","Pomorskie")}')
+    def yearRegression(self,data,year,sex = 'all'):
+        """
+        Shows regions with regression in given year.
+        """
+        regions = data.listOfRegions(data)
+        print(f'W latach {year} -> {(int(year)+1)} wystąpiła regresja w województwach: ')
+        for region in regions:
+            if data.passRegression(data,region,year,sex):
+                print(f' {region}')
+
+    def compareRegions(self, data, region_A, region_B, sex = 'all'):
+        """
+        Function compares 2 voivodeships in years and prints out which one had better pass rate in each year
+        """
+        region_A_years = {}
+        region_B_years = {}
+        region_A_years = data.passRateInRegion(data,str(region_A),sex)
+        region_B_years = data.passRateInRegion(data,str(region_B),sex)
+        years = set(data.year[1:])
+        year= int(min(years))
+
+        while year <= int(max(years)):
+            if region_A_years[year] > region_B_years[year]:
+                print(f'W {year} lepszą zdawalność miało województwo {region_A}')
+            else:
+                print(f'W {year} lepszą zdawalność miało województwo {region_B}')
+            
+            year +=1
+
