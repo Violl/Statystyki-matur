@@ -1,5 +1,14 @@
 import csv
 
+def capitalize_region(region):
+    if '-' in region:
+        first,second = region.split('-')
+        first = first.capitalize()
+        second = second.capitalize()
+        return first + '-' + second
+    else:
+        region = region.capitalize()
+        return region
 
 class Graduate:
     def __init__(self, region, attended_or_passed, sex, year, number):
@@ -20,35 +29,24 @@ class Graduate:
                 new_data.attended_or_passed.append(row[1])
                 new_data.sex.append(row[2])
                 new_data.year.append(row[3])
-                new_data.number.append(row[4])
-
-
-    def averageAttendedInYears(self, data, year, region, sex ='all'):
-        """
-        Function calculates and returns average number of students that attended exam in given voivodeship in years from lowest year to given year.
-        If parameter sex is not given, function runs for all.
-        """
-        average = 0
-        for i in range(len(data.year)):
-            if 'przystąpiło' in data.attended_or_passed[i] and int(data.year[i])<=year:
-                    if region in data.region[i] and (sex in data.sex[i] or sex == 'all'):
-                        average += int(data.number[i])
-        return average/(1+year-int(min(data.year)))         
+                new_data.number.append(row[4])   
 
     def passRate(self,data,year,region,sex = 'all'):
         """
         Function calculates pass rate in given year and region.
         """
+        region = capitalize_region(region)
         passed = 0
         temp_attending = 0
+
         for i in range(len(data.year)):
-            if str(region) in data.region[i] and str(year) in data.year[i] and (sex in data.sex[i] or sex == 'all'):
+            if region in data.region[i] and str(year) in data.year[i] and (sex.lower() in data.sex[i] or sex == 'all'):
                 if 'przystąpiło' in data.attended_or_passed[i]:
                     temp_attending = temp_attending + int(data.number[i])
                 elif 'zdało' in data.attended_or_passed[i]:
                     passed = passed + int(data.number[i])/int(temp_attending)*100
-                            
-        return passed
+        return round(passed,2)
+        
         
     def passRateInRegion(self, data, region, sex ='all'):
         """
@@ -77,9 +75,22 @@ class Graduate:
             passed_in_region[region] = data.passRate(data,year,region,sex)
         return passed_in_region
 
+    def averageAttendedInYears(self, data, year, region, sex ='all'):
+        """
+        Function calculates and returns average number of students that attended exam in given voivodeship in years from lowest year to given year.
+        If parameter sex is not given, function runs for all.
+        """
+        region = capitalize_region(region)
+        average = 0
+        for i in range(len(data.year)):
+            if 'przystąpiło' in data.attended_or_passed[i] and int(data.year[i])<=int(year):
+                    if region in data.region[i] and (sex in data.sex[i] or sex == 'all'):
+                        average += int(data.number[i])
+        return average/(1+int(year)-int(min(data.year)))      
+
     def listOfRegions(self, data):
         """
-        Makes a list of regions that apeared in database.
+        Makes a list of regions that appeared in database.
         """
         regions = set(data.region)
         regions.remove("Terytorium")
@@ -121,6 +132,7 @@ class Graduate:
         """
         Shows in what years in given region regression appeared.
         """
+        years = set(data.year[1:])
         year = int(min(years))
         print(f'W województwie {region}m wystąpiła regresja w latach: ')
         while year <= int(max(years)):

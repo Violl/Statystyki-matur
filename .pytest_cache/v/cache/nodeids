@@ -1,0 +1,7 @@
+[
+  "test_matury.py::test_passRate_one",
+  "test_matury.py::test_passRate_two",
+  "test_matury.py::test_passRate_three",
+  "test_matury.py::test_capitalize_region",
+  "test_matury.py::test_averageAttendedInYears"
+]
