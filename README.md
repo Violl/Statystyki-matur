@@ -5,6 +5,7 @@ Wszystkie funkcje mogą zostać wywołane tylko dla jednej z płci lub dla obu p
 
 Projekt został napisany w Visual Studio Code.
 
+Testy jednostkowe zostały stworzone z użyciem pytest.
 
 Dostępne komendy:
    readData(filename, new_data)
